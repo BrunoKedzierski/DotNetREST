@@ -50,6 +50,31 @@ namespace TaskUni.Model
 
         }
 
+
+        public async Task PersistToFile(Student student)
+        {
+
+            FileInfo fi = new(DataPath);
+
+            using (StreamWriter writer = new StreamWriter(fi.Open(FileMode.Append)))
+            {
+
+
+
+                await writer.WriteLineAsync($"{student.Name},{student.Surname},{student.NumerIndeksu}, {student.DataUrodzenia},{student.Studia},{student.Tryb},{student.Email},{student.ImieOjca}, {student.ImieMatki}");
+
+
+
+            }
+
+          
+
+
+        }
+
+
+
+
         public Student ParseFromCsv(string CsvEntry) {
 
 
@@ -96,11 +121,13 @@ namespace TaskUni.Model
         
         }
 
-        public void AddStudent(Student st) {
+        public async Task AddStudentAsync(Student st) {
             string Id = st.NumerIndeksu;
 
             if (_studentsData.FindIndex((s) => s.NumerIndeksu.Equals(Id)) != -1)
                 throw new DuplicatedStudentIdException($"Student with Id of {Id} already exists");
+
+            await PersistToFile(st);
 
             _studentsData.Add(st);
         }
