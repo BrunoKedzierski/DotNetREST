@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using TaskUni.Exceptions;
 
 namespace TaskUni.Model
 {
@@ -36,7 +37,11 @@ namespace TaskUni.Model
 
                 while ((line =  await stream.ReadLineAsync()) != null)
                 {
-                    _studentsData.Add(ParseFromCsv(line));
+                    Student st = ParseFromCsv(line);
+                    if (st != null)
+                    {
+                        _studentsData.Add(ParseFromCsv(line));
+                    }
                 }
 
 
@@ -81,11 +86,48 @@ namespace TaskUni.Model
         public Student GetStudentById(string id) {
 
 
-            Student student = _studentsData.Find(s => s.NumerIndeksu.Equals(id));
+            int index = _studentsData.FindIndex(s => s.NumerIndeksu.Equals(id));
+
+            if (index == -1)
+                throw new StudentNotFoundException($"Could not find student with id of: {id}");
+
+            return _studentsData[index];
+        
+        
+        }
+
+        public void AddStudent(Student st) {
+            string Id = st.NumerIndeksu;
+
+            if (_studentsData.FindIndex((s) => s.NumerIndeksu.Equals(Id)) != -1)
+                throw new DuplicatedStudentIdException($"Student with Id of {Id} already exists");
+
+            _studentsData.Add(st);
+        }
+
+        public void DeleteStudentById(string Id) {
+            int index = _studentsData.FindIndex(st => st.NumerIndeksu.Equals(Id));
+
+            if (index == -1)
+                throw new StudentNotFoundException($"Could not find student with id of: {Id}");
+
+            _studentsData.RemoveAt(index);
+       
+        }
+
+        public Student UpdateStudent(Student student) {
+
+            string Id = student.NumerIndeksu;
+
+            int index = _studentsData.FindIndex(st => st.NumerIndeksu.Equals(Id));
+
+            if(index == -1)
+                throw new StudentNotFoundException($"Could not find student with id of: {Id}");
+
+            _studentsData[index] = student;
 
             return student;
-        
-        
+
         }
 
     }
