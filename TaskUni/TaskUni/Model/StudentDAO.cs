@@ -51,18 +51,21 @@ namespace TaskUni.Model
         }
 
 
-        public async Task PersistToFile(Student student)
+        public async Task PersistToFile()
         {
 
             FileInfo fi = new(DataPath);
 
-            using (StreamWriter writer = new StreamWriter(fi.Open(FileMode.Append)))
+          
+
+            using (StreamWriter writer = new StreamWriter(fi.Open(FileMode.Create)))
             {
 
+                foreach (Student student in _studentsData)
+                {
 
-
-                await writer.WriteLineAsync($"{student.Name},{student.Surname},{student.NumerIndeksu}, {student.DataUrodzenia},{student.Studia},{student.Tryb},{student.Email},{student.ImieOjca}, {student.ImieMatki}");
-
+                    await writer.WriteLineAsync($"{student.Name},{student.Surname},{student.NumerIndeksu}, {student.DataUrodzenia},{student.Studia},{student.Tryb},{student.Email},{student.ImieOjca}, {student.ImieMatki}");
+                }
 
 
             }
@@ -127,22 +130,25 @@ namespace TaskUni.Model
             if (_studentsData.FindIndex((s) => s.NumerIndeksu.Equals(Id)) != -1)
                 throw new DuplicatedStudentIdException($"Student with Id of {Id} already exists");
 
-            await PersistToFile(st);
-
             _studentsData.Add(st);
+            await PersistToFile();
+
+            
         }
 
-        public void DeleteStudentById(string Id) {
+        public async Task DeleteStudentById(string Id) {
             int index = _studentsData.FindIndex(st => st.NumerIndeksu.Equals(Id));
 
             if (index == -1)
                 throw new StudentNotFoundException($"Could not find student with id of: {Id}");
 
             _studentsData.RemoveAt(index);
+
+             await PersistToFile();
        
         }
 
-        public Student UpdateStudent(Student student) {
+        public async Task<Student> UpdateStudent(Student student) {
 
             string Id = student.NumerIndeksu;
 
@@ -153,7 +159,10 @@ namespace TaskUni.Model
 
             _studentsData[index] = student;
 
-            return student;
+            await PersistToFile();
+
+            return _studentsData[index];
+          
 
         }
 

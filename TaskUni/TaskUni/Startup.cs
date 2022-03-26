@@ -45,6 +45,11 @@ namespace TaskUni
 
             app.UseRouting();
 
+            app.UseCors(x =>
+
+            x.AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader()
+            );
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

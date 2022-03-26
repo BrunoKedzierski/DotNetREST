@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace TaskUni.Controllers
 
 
 
-
+        
         [HttpGet]
         public async Task<IActionResult> GetStudentList()
         {
@@ -32,14 +33,22 @@ namespace TaskUni.Controllers
 
         }
 
-        [HttpGet("{Index}")]
+        [HttpGet("/{Index}")]
         public async Task<IActionResult> GetStudentByIndex(string Index) {
 
             StudentDAO StudentDAO = new StudentDAO("E:\\Desktop\\cwiczenia3_jd-BrunoKedzierski\\TaskUni\\TaskUni\\dane.csv");
 
             await StudentDAO.LoadStudentData();
 
+            Student student;
 
+            try
+            { 
+            }
+            catch (Exception ex)
+            {
+            }
+    
           
             return Ok(StudentDAO.GetStudentById(Index));
         
@@ -70,7 +79,36 @@ namespace TaskUni.Controllers
 
         }
 
+
+        [HttpDelete("/{Index}")]
+        public async Task<IActionResult> DeleteStudent([FromBody] Student student)
+        {
+
+
+            return Ok();
+        }
+
+
+
+
+        [HttpPut("/{index}")]
+        public async Task<IActionResult> PutStudent([FromBody] Student student, [FromRoute] string index)
+        {
+            StudentDAO StudentDAO = new StudentDAO("E:\\Desktop\\cwiczenia3_jd-BrunoKedzierski\\TaskUni\\TaskUni\\dane.csv");
+
+            await StudentDAO.LoadStudentData();
+
+            student.NumerIndeksu = index;
+
+            Student st = await StudentDAO.UpdateStudent(student);
+
+           
+            return Ok(st);
+        }
+
+
     }
+
 
 
 }
