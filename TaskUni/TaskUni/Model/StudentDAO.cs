@@ -129,6 +129,10 @@ namespace TaskUni.Model
 
             if (_studentsData.FindIndex((s) => s.NumerIndeksu.Equals(Id)) != -1)
                 throw new DuplicatedStudentIdException($"Student with Id of {Id} already exists");
+            if (!st.NumerIndeksu.ToLower().StartsWith("s") || st.NumerIndeksu.Length != 6) {
+                throw new InvalidFormatException($"Incorrect id of {Id}");
+            
+            }
 
             _studentsData.Add(st);
             await PersistToFile();
@@ -154,7 +158,7 @@ namespace TaskUni.Model
 
             int index = _studentsData.FindIndex(st => st.NumerIndeksu.Equals(Id));
 
-            if(index == -1)
+            if (index == -1)
                 throw new StudentNotFoundException($"Could not find student with id of: {Id}");
 
             _studentsData[index] = student;

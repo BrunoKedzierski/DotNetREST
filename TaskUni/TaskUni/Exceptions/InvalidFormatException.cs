@@ -1,6 +1,11 @@
-﻿namespace TaskUni.Exceptions
+﻿using System;
+
+namespace TaskUni.Exceptions
 {
-    public class InvalidFormatException
+    public class InvalidFormatException : Exception
     {
+        public InvalidFormatException(string message) : base(message)
+        {
+        }
     }
 }
